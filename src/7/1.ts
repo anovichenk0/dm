@@ -146,6 +146,15 @@ function bellmanFord(
 	return { distances, iterations }
 }
 
+// Функция для вывода таблицы расстояний
+function printDistanceTable(distances: number[], start: number): void {
+	console.log(`Таблица расстояний от вершины ${start}:`)
+	console.log('Вершина\tРасстояние')
+	distances.forEach((distance, vertex) => {
+		console.log(`${vertex}\t${distance === Infinity ? '∞' : distance}`)
+	})
+}
+
 // Основная программа
 function main() {
 	const sizes = [1200, 3200, 8000, 20000, 29000]
@@ -159,10 +168,16 @@ function main() {
 		const distFloyd = floydWarshall(graph, n)
 		console.timeEnd('Флойд-Уоршелл')
 
+		// Вывод таблицы расстояний для Флойда-Уоршелла
+		printDistanceTable(distFloyd[0], 0)
+
 		// Алгоритм Форда-Беллмана
 		console.time('Форд-Беллман')
 		const { distances, iterations } = bellmanFord(graph, n, 0)
 		console.timeEnd('Форд-Беллман')
+
+		// Вывод таблицы расстояний для Форда-Беллмана
+		printDistanceTable(distances, 0)
 
 		console.log(`Итерации Форда-Беллмана: ${iterations}`)
 	}
