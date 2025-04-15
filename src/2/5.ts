@@ -1,45 +1,53 @@
-function factorial(n: number): number {
-    if (n <= 1) return 1
-    return n * factorial(n - 1)
-}
+// Calculate the number of shortest paths in a grid using brute force
+function countShortestPathsBruteForce(horizontal: number, vertical: number): number {
+    let count = 0;
 
-// Calculate the number of shortest paths in a grid
-function countShortestPaths(horizontal: number, vertical: number): number {
-    let result = 1;
-    for (let i = 1; i <= vertical; i++) {
-        result = (result * (horizontal + i)) / i; // Compute binomial coefficient
-    }
-    return result;
-}
+    // Recursive function to generate all possible paths
+    function generate(x: number, y: number): void {
+        if (x >= horizontal && y >= vertical) return; // Out of bounds
 
-// Calculate the number of shortest paths with no consecutive vertical segments
-function countConstrainedPaths(horizontal: number, vertical: number): number {
-    const dp: number[][] = Array.from({ length: vertical + 1 }, () =>
-        Array(horizontal + 1).fill(0)
-    )
-
-    dp[0][0] = 1
-
-    for (let v = 0; v <= vertical; v++) {
-        for (let h = 0; h <= horizontal; h++) {
-            if (v > 0 && (v === 1 || dp[v - 2][h] > 0)) {
-                dp[v][h] += dp[v - 1][h] // Add paths ending with a vertical move
-            }
-            if (h > 0) {
-                dp[v][h] += dp[v][h - 1] // Add paths ending with a horizontal move
-            }
+        if (x === horizontal && y === vertical) {
+            count++;
+            return;
         }
+
+
+        if (x < horizontal) generate(x + 1, y); // Move right
+        if (y < vertical) generate(x, y + 1); // Move up
     }
 
-    return dp[vertical][horizontal]
+    generate(0, 0);
+    return count;
+}
+
+// Calculate the number of shortest paths with no consecutive vertical segments using brute force
+function countConstrainedPathsBruteForce(horizontal: number, vertical: number): number {
+    let count = 0;
+
+    // Recursive function to generate all possible paths
+    function generate(x: number, y: number, lastMove: string): void {
+        if (x === horizontal && y === vertical) {
+            count++;
+            return;
+        }
+
+        if (x < horizontal) generate(x + 1, y, 'H'); // Move right
+        if (y < vertical && lastMove !== 'V') generate(x, y + 1, 'V'); // Move up (not consecutive)
+    }
+
+    generate(0, 0, '');
+    return count;
 }
 
 // Example usage
-const horizontal = 20
-const vertical = 18
+const horizontal = 20;
+const vertical = 18;
 
-const shortestPaths = countShortestPaths(horizontal, vertical)
-console.log(`Number of shortest paths: ${shortestPaths}`)
+console.log(
+    `Количество кратчайших путей без двух подряд вертикальных участков: ${countConstrainedPathsBruteForce(
+        horizontal,
+        vertical
+    )}`
+);
+console.log(`Количество кратчайших путей: ${countShortestPathsBruteForce(horizontal, vertical)}`);
 
-const constrainedPaths = countConstrainedPaths(horizontal, vertical)
-console.log(`Number of constrained shortest paths: ${constrainedPaths}`)

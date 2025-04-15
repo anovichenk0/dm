@@ -1,28 +1,34 @@
-function factorial(n: number): number {
-    if (n <= 1) return 1
-    return n * factorial(n - 1)
-}
+function countFiveLetterWordsBruteForce(word: string): number {
+    const letters = word.split('');
+    const letterCounts: Record<string, number> = {};
 
-function countDistinctWords(word: string, length: number): number {
-    const letterCounts: Record<string, number> = {}
-
-    // Count occurrences of each letter
-    for (const letter of word) {
-        letterCounts[letter] = (letterCounts[letter] || 0) + 1
+    // Подсчет количества каждой буквы
+    for (const letter of letters) {
+        letterCounts[letter] = (letterCounts[letter] || 0) + 1;
     }
 
-    // Calculate the total number of permutations
-    let totalPermutations = factorial(word.length) / factorial(word.length - length)
+    let count = 0;
 
-    // Divide by factorial of repeated letters
-    for (const count of Object.values(letterCounts)) {
-        totalPermutations /= factorial(count)
+    // Рекурсивная функция для генерации всех возможных слов
+    function generate(currentWord: string, depth: number, availableCounts: Record<string, number>): void {
+        if (depth === 5) {
+            count++;
+            return;
+        }
+
+        for (const letter of Object.keys(availableCounts)) {
+            if (availableCounts[letter] > 0) {
+                availableCounts[letter]--;
+                generate(currentWord + letter, depth + 1, availableCounts);
+                availableCounts[letter]++; // Восстанавливаем доступность буквы
+            }
+        }
     }
 
-    return totalPermutations
+    generate('', 0, { ...letterCounts });
+    return count;
 }
 
-// Example usage
-const word = "ЧЕРЕСПОЛОСИЦА"
-const length = 5
-console.log(`Number of distinct ${length}-letter words:`, countDistinctWords(word, length))
+// Пример использования
+const word = "ЧЕРЕСПОЛОСИЦА";
+console.log(`Количество пятибуквенных слов: ${countFiveLetterWordsBruteForce(word)}`);
