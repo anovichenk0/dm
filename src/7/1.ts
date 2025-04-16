@@ -86,10 +86,11 @@ function ensureConnectivity(graph: Graph, n: number): void {
 }
 
 // Алгоритм Флойда-Уоршелла
-function floydWarshall(graph: Graph, n: number): number[][] {
+function floydWarshall(graph: Graph, n: number) {
 	const dist: number[][] = Array.from({ length: n }, () =>
 		Array(n).fill(Infinity)
 	)
+	let iterations = 0
 
 	// Инициализация
 	for (let i = 0; i < n; i++) {
@@ -110,40 +111,34 @@ function floydWarshall(graph: Graph, n: number): number[][] {
 					dist[i][j] = dist[i][k] + dist[k][j]
 				}
 			}
+			iterations++
 		}
 	}
 
-	return dist
+	return { dist, iterations }
 }
 
 // Алгоритм Форда-Беллмана
-function bellmanFord(
-	graph: Graph,
-	n: number,
-	start: number
-): { distances: number[]; iterations: number } {
-	const distances = Array(n).fill(Infinity)
-	distances[start] = 0
+function bellmanFord(graph: Graph, n: number, start: number) {
+	const dist = Array(n).fill(Infinity)
+	dist[start] = 0
 	let iterations = 0
 
 	for (let i = 0; i < n - 1; i++) {
 		let updated = false
 		for (let u = 0; u < n; u++) {
 			for (let v = 0; v < n; v++) {
-				if (
-					graph[u][v] > 0 &&
-					distances[u] + graph[u][v] < distances[v]
-				) {
-					distances[v] = distances[u] + graph[u][v]
+				if (graph[u][v] > 0 && dist[u] + graph[u][v] < dist[v]) {
+					dist[v] = dist[u] + graph[u][v]
 					updated = true
 				}
 			}
+			iterations++
 		}
-		iterations++
 		if (!updated) break
 	}
 
-	return { distances, iterations }
+	return { dist, iterations }
 }
 
 // Функция для вывода таблицы расстояний
@@ -157,7 +152,8 @@ function printDistanceTable(distances: number[], start: number): void {
 
 // Основная программа
 function main() {
-	const sizes = [1200, 3200, 8000, 20000, 29000]
+	// const sizes = [1200, 3200, 8000, 20000, 29000]
+	const sizes = [50]
 
 	for (const n of sizes) {
 		console.log(`Граф с ${n} вершинами:`)
@@ -165,21 +161,22 @@ function main() {
 
 		// Алгоритм Флойда-Уоршелла
 		console.time('Флойд-Уоршелл')
-		const distFloyd = floydWarshall(graph, n)
+		const floyd = floydWarshall(graph, n)
 		console.timeEnd('Флойд-Уоршелл')
 
 		// Вывод таблицы расстояний для Флойда-Уоршелла
-		printDistanceTable(distFloyd[0], 0)
+		printDistanceTable(floyd.dist[0], 0)
 
 		// Алгоритм Форда-Беллмана
 		console.time('Форд-Беллман')
-		const { distances, iterations } = bellmanFord(graph, n, 0)
+		const ford = bellmanFord(graph, n, 0)
 		console.timeEnd('Форд-Беллман')
 
 		// Вывод таблицы расстояний для Форда-Беллмана
-		printDistanceTable(distances, 0)
+		printDistanceTable(ford.dist, 0)
 
-		console.log(`Итерации Форда-Беллмана: ${iterations}`)
+		console.log(`Итерации Форда-Беллмана O(n*m): ${ford.iterations}`)
+		console.log(`Итерации Форда-Уоршелла (O(n^3): ${floyd.iterations}`)
 	}
 }
 
