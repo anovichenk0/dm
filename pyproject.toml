@@ -1,0 +1,17 @@
+[project]
+name = "dm"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "Andrey Novichenko",email = "60508206+anovicenko74@users.noreply.github.com"}
+]
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "sympy (>=1.13.3,<2.0.0)"
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"

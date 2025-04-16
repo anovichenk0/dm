@@ -11,3 +11,5 @@ function calculateTenthTerm(): number {
 
 // Пример вызова функции
 console.log(calculateTenthTerm());
+
+// Через порождающую функцию
